@@ -513,9 +513,9 @@ void ofxOpenCvDnnObjectDetection::postprocess(Mat& frame, const std::vector<Mat>
     
     std::vector<int> classIds;
     std::vector<float> confidences;
-	std::vector<cv::Rect> boxes;
-	std::vector<ofRectangle> rects;
-	std::vector<String> labels;
+    std::vector<cv::Rect> boxes;
+    std::vector<ofRectangle> rects;
+    std::vector<String> labels;
 
     if (net.getLayer(0)->outputNameToIndex("im_info") != -1)  // Faster-RCNN or R-FCN
     {
@@ -1925,7 +1925,7 @@ void ofxOpenCvDnnObjectDetection::mouseExit(ofMouseEventArgs &e)
 void ofxOpenCvDnnObjectDetection::dragEvent(ofDragInfo &dragInfo){
     ofDirectory dir;
     dir.open(dragInfo.files[0]);
-    str_debug = "Drag Event:\n "+dragInfo.files[0];
+    str_debug = "Drag Event:\n " + ofPathToString(dragInfo.files[0]);
    
     
     
