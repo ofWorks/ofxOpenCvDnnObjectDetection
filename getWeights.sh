@@ -8,20 +8,20 @@ else
 	echo "wget is not installed. Falling back to curl"
 	curl -O "${path_to_weights}"
 fi
-cp ./yolov2-tiny.weights ./Examples/camera/bin/data/dnn/
-cp ./yolov2-tiny.weights ./Examples/single_image/bin/data/dnn/
-cp ./yolov2-tiny.weights ./Examples/osc_sender/bin/data/dnn/
-cp ./yolov2-tiny.weights ./Examples/annotation/bin/data/dnn/yolo.weights
+cp ./yolov2-tiny.weights ./example_camera/bin/data/dnn/
+cp ./yolov2-tiny.weights ./example_single_image/bin/data/dnn/
+cp ./yolov2-tiny.weights ./example_osc_sender/bin/data/dnn/
+cp ./yolov2-tiny.weights ./example_annotation/bin/data/dnn/yolo.weights
 if wget ${path_to_cfg}; then
 	echo "downloading cfg"
 else
 	echo "wget is not installed. Falling back to curl"
 	curl -O "${path_to_cfg}"
 fi
-cp ./yolov2-tiny.cfg ./Examples/single_image/bin/data/dnn/
-cp ./yolov2-tiny.cfg ./Examples/camera/bin/data/dnn/
-cp ./yolov2-tiny.cfg ./Examples/osc_sender/bin/data/dnn/
-cp ./yolov2-tiny.cfg ./Examples/annotation/bin/data/dnn/
+cp ./yolov2-tiny.cfg ./example_single_image/bin/data/dnn/
+cp ./yolov2-tiny.cfg ./example_camera/bin/data/dnn/
+cp ./yolov2-tiny.cfg ./example_osc_sender/bin/data/dnn/
+cp ./yolov2-tiny.cfg ./example_annotation/bin/data/dnn/
 rm -f ./yolov2-tiny.cfg
 rm -f ./yolov2-tiny.weights
 echo "done"
