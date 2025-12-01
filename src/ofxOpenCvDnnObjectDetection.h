@@ -65,6 +65,7 @@ class Object{
 public:
     Object();
     Object(int _class_id, string _name, float _p, float _x, float _y, float _w, float _h);
+	Object(int _class_id, string _name, float _p, ofRectangle r);
     ~Object();
     ofRectangle r;
     ofRectangle getScaledBB(float _w, float _h);
@@ -150,6 +151,8 @@ public:
     vector<string> classNamesVec;
     vector<ofColor> detection_color;
     float confidenceThreshold;
+	//dimitre
+	float nmsThreshold = 0.5;
     ofTrueTypeFont font_info;
 
     string filename;

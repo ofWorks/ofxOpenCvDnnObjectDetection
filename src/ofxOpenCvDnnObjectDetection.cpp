@@ -69,6 +69,8 @@ Object::Object(int _class_id, string _name, float _p, float _x, float _y, float 
     r.set(_x, _y, _w, _h);
 }
 
+Object::Object(int _class_id, string _name, float _p, ofRectangle rect) : class_id(_class_id), name(_name), p(_p), r(rect) {}
+
 Object::~Object()
 {
     
@@ -500,7 +502,6 @@ void ofxOpenCvDnnObjectDetection::drawAnnotation(float _x, float _y, float _w, f
 
 cv::Mat ofxOpenCvDnnObjectDetection::toCV(ofPixels &pix)
 {
-
     return cv::Mat(pix.getHeight(), pix.getWidth(), CV_MAKETYPE(CV_8U, pix.getNumChannels()), pix.getData(), 0);
 }
 
@@ -512,6 +513,10 @@ void ofxOpenCvDnnObjectDetection::postprocess(Mat& frame, const std::vector<Mat>
     
     std::vector<int> classIds;
     std::vector<float> confidences;
+	std::vector<cv::Rect> boxes;
+	std::vector<ofRectangle> rects;
+	std::vector<String> labels;
+
     if (net.getLayer(0)->outputNameToIndex("im_info") != -1)  // Faster-RCNN or R-FCN
     {
         // Network produces output blob with a shape 1x1xNx7 where N is a number of
@@ -574,7 +579,7 @@ void ofxOpenCvDnnObjectDetection::postprocess(Mat& frame, const std::vector<Mat>
                 if (confidence > confidenceThreshold){
                     float left = (data[i + 3] * frame.cols)/input_width;
                     float top = (data[i + 4] * frame.rows)/input_height;
-                    float  right = (data[i + 5] * frame.cols)/input_width;
+                    float right = (data[i + 5] * frame.cols)/input_width;
                     float bottom = (data[i + 6] * frame.rows)/input_height;
                     float width = right - left ;
                     float height = bottom - top ;
@@ -604,10 +609,6 @@ void ofxOpenCvDnnObjectDetection::postprocess(Mat& frame, const std::vector<Mat>
 
                 minMaxLoc(scores, 0, &confidence, 0, &classIdPoint);
 
-                if (confidence > confidenceThreshold){
-//                    printf("%f, %f\n", confidence, confidenceThreshold);
-                }
-                
                 if (confidence > confidenceThreshold)
                 {
                     float centerX = (data[0] * frame.cols)/input_width;
@@ -617,10 +618,16 @@ void ofxOpenCvDnnObjectDetection::postprocess(Mat& frame, const std::vector<Mat>
                     float left = centerX - width / 2;
                     float top = centerY - height / 2;
 
+					classIds.push_back(classIdPoint.x);
+					confidences.push_back((float)confidence);
+					boxes.push_back(cv::Rect(int(left* input_width), int(top * input_height), int(width * input_width) , int(height * input_height)));
+
                     String label = String(classNamesVec[classIdPoint.x]);
-                    ofRectangle r(left,top,width,height);
-                   
-                    object.push_back(::Object(classIdPoint.x, label, confidence, r.x,r.y, r.width, r.height));
+//                    ofRectangle r(left,top,width,height);
+//					rects.emplace_back(left * input_width, top * input_height, width * input_width, height * input_height);
+					rects.emplace_back(left, top, width, height);
+					labels.push_back(label);
+//                    object.push_back(::Object(classIdPoint.x, label, confidence, r.x,r.y, r.width, r.height));
                 }
             }
         }
@@ -629,17 +636,18 @@ void ofxOpenCvDnnObjectDetection::postprocess(Mat& frame, const std::vector<Mat>
         CV_Error(Error::StsNotImplemented, "Unknown output layer type: " + outLayerType);
     }
 
-    /*
     std::vector<int> indices;
-  //  NMSBoxes(boxes, confidences, confThreshold, nmsThreshold, indices);
+    NMSBoxes(boxes, confidences, confidenceThreshold, nmsThreshold, indices);
     for (size_t i = 0; i < indices.size(); ++i)
     {
+		//		cout << i << " : " << indices[i] << endl;
         int idx = indices[i];
-    //    Rect box = boxes[idx];
+        cv::Rect box = boxes[idx];
+		object.push_back(::Object(classIds[idx], labels[idx], confidences[idx], rects[idx]));
+
 //        drawPred(classIds[idx], confidences[idx], box.x, box.y,
 //                 box.x + box.width, box.y + box.height, frame);
     }
-     */
 }
 
 // Main Draw
@@ -926,32 +934,54 @@ void ofxOpenCvDnnObjectDetection::updateControls()
         b_ai_checker = false;
     }
 }
-void ofxOpenCvDnnObjectDetection::update(ofPixels &op)
+
+
+Mat inputBlob;
+Mat resized;
+cv::Mat frame;
+std::vector<Mat> outs;
+
+void ofxOpenCvDnnObjectDetection::update(ofPixels &pix)
 {
     object.clear();
-    
-    cv::Mat frame = toCV(op);
-    input_width = (int)op.getWidth();
-    input_height = (int)op.getHeight();
-    
+//	cout << pix.getNumChannels() << endl;
+	resized = cv::Mat(pix.getHeight(), pix.getWidth(), CV_MAKETYPE(CV_8U, pix.getNumChannels()), pix.getData(), 0);
+	frame = resized;
+
+//    resized = frame = toCV(op);
+    input_width = (int)pix.getWidth();
+    input_height = (int)pix.getHeight();
+	
+	// Acabo de eu mesmo colocar. sera q precisa?
+//	cvtColor(resized, resized, COLOR_RGB2BGR);
+
     if (frame.channels() == 4){
+		cout << "4 channels" << endl;
         cvtColor(frame, frame, COLOR_BGRA2RGB);
     }
     
     //! [Resizing without keeping aspect ratio]
-    Mat resized;
-    resize(frame, resized, cv::Size(network_width, network_height));
+
+	if (resized.size().width > 500) {
+		resize(frame, resized, cv::Size(network_width, network_height));
+	}
     
+	
+//	cout << "resized ::: " << resized.size().width << endl;
     //! [Prepare blob]
-    Mat inputBlob = blobFromImage(resized, 1 / 255.F); //Convert Mat to batch of images
+    inputBlob = blobFromImage(resized, 1 / 255.F); //Convert Mat to batch of images
     
     //! [Set input blob]
     //net.setInput(inputBlob, "data");                   //set the network input
     net.setInput(inputBlob);
     
-    std::vector<Mat> outs;
+//	outs.clear();
+	
     uint64_t t0 = ofGetElapsedTimeMicros();
+	
+//	net.forward(outs);
     net.forward(outs, getOutputsNames(net));
+//	cout << outs.size() << endl;
     inference_time = ofGetElapsedTimeMicros()-t0;
     
     postprocess(frame, outs, net);
@@ -1070,7 +1100,9 @@ void ofxOpenCvDnnObjectDetection::setup(string _path_to_cfg, string _path_to_wei
     //net.setPreferableBackend(DNN_BACKEND_DEFAULT);
 //    net.setPreferableTarget(DNN_TARGET_OPENCL);
 //    net.setPreferableBackend(DNN_BACKEND_OPENCV);
-    net.setPreferableTarget(DNN_TARGET_OPENCL);
+//    net.setPreferableTarget(DNN_TARGET_OPENCL);
+	net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+
 //    net.setPreferableTarget(DNN_TARGET_OPENCL_FP16);
 
     
