@@ -4,20 +4,20 @@ std::vector<String> getOutputsNames(const Net& net);
 std::string Replace( std::string String1, std::string String2, std::string String3 )
 {
     std::string::size_type  Pos( String1.find( String2 ) );
-    
+
     while( Pos != std::string::npos )
     {
         String1.replace( Pos, String2.length(), String3 );
         Pos = String1.find( String2, Pos + String3.length() );
     }
-    
+
     return String1;
 }
 
 bool doesIncludeExtensions(string _filename, vector<string>_extensions)
 {
     string extname;
-    
+
     int ext_i = _filename.find_last_of(".");
     if( ext_i > 0 ){
         extname = _filename.substr(ext_i,_filename.size()-ext_i);
@@ -25,7 +25,7 @@ bool doesIncludeExtensions(string _filename, vector<string>_extensions)
     else{
         return false;
     }
-    
+
     for( int i = 0; i < _extensions.size(); i++ ){
         if( _extensions[i] == extname ){
             return true;
@@ -37,29 +37,29 @@ bool doesIncludeExtensions(string _filename, vector<string>_extensions)
 std::vector<std::string> split(std::string str, char del) {
     int first = 0;
     int last = str.find_first_of(del);
-    
+
     std::vector<std::string> result;
-    
+
     while (first < str.size()) {
         std::string subStr(str, first, last - first);
-        
+
         result.push_back(subStr);
-        
+
         first = last + 1;
         last = str.find_first_of(del, first);
-        
+
         if (last == std::string::npos) {
             last = str.size();
         }
     }
-    
+
     return result;
 }
 
 
 Object::Object()
 {
-    
+
 }
 Object::Object(int _class_id, string _name, float _p, float _x, float _y, float _w, float _h)
 {
@@ -73,7 +73,7 @@ Object::Object(int _class_id, string _name, float _p, ofRectangle rect) : class_
 
 Object::~Object()
 {
-    
+
 }
 
 // Constructor
@@ -83,7 +83,7 @@ ofxOpenCvDnnObjectDetection::ofxOpenCvDnnObjectDetection()
 }
 ofxOpenCvDnnObjectDetection::~ofxOpenCvDnnObjectDetection()
 {
-    
+
 }
 
 void ofxOpenCvDnnObjectDetection::enableAnnotationControl()
@@ -331,13 +331,13 @@ void ofxOpenCvDnnObjectDetection::draw(float _x, float _y, float _w, float _h)
         ofSetColor(detection_color.at(object[i].class_id));
         ofRectangle r_scaled = object.at(i).getScaledBB(_x, _y, _w, _h);
         ofDrawRectangle(r_scaled);
-        
+
         ofFill();
         ofDrawRectangle(r_scaled.x, r_scaled.y-18,r_scaled.width,18);
         ofSetColor(ofColor::white);
         font_info.drawString("NO["+ ofToString(i) +"] ID:["+ofToString(object.at(i).class_id)+"]: "+object.at(i).name + ": " + ofToString(object.at(i).p),
                              r_scaled.x,r_scaled.y);
-        
+
     }
 }
 
@@ -347,7 +347,7 @@ void ofxOpenCvDnnObjectDetection::drawAnnotation(float _x, float _y, float _w, f
     if( image_annotation.isAllocated() ){
         image_annotation.draw(0,0, _w, _h);
     }
-    
+
     int alpha = alpha_annotation;
     int alpha_selected = alpha_annotation+50;
     if( alpha_selected > 255 ) alpha_selected = 255;
@@ -357,7 +357,7 @@ void ofxOpenCvDnnObjectDetection::drawAnnotation(float _x, float _y, float _w, f
         ofNoFill();
         ofSetLineWidth(3);
         ofSetColor(detection_color.at(train[i].id),alpha);
-        
+
         // Object Detection
         if( toggle_check_segmentation == false ){
             ofRectangle r_scaled = train.at(i).getScaledBB(_w, _h);
@@ -372,7 +372,7 @@ void ofxOpenCvDnnObjectDetection::drawAnnotation(float _x, float _y, float _w, f
         // Segmentation
         else{
             ofRectangle r_scaled = train.at(i).getScaledBB(_w, _h);
-            
+
             ofBeginShape();
             for( int j = 0; j < train[i].p.getVertices().size(); j++ ){
 
@@ -391,13 +391,13 @@ void ofxOpenCvDnnObjectDetection::drawAnnotation(float _x, float _y, float _w, f
                     ofFill();
                     ofSetColor(detection_color[train[i].id],alpha);
                 }
-                
+
                 ofFill();
                 ofSetColor(detection_color[train[i].id],alpha);
                 ofVertex(train[i].p.getVertices()[j].x, train[i].p.getVertices()[j].y);
             }
             ofEndShape();
-           
+
             ofFill();
             ofSetColor(color_train_polyline);
             train[i].p.draw();
@@ -420,7 +420,7 @@ void ofxOpenCvDnnObjectDetection::drawAnnotation(float _x, float _y, float _w, f
         else{
             if( train[i].p.inside(ofGetMouseX(), ofGetMouseY()) ){
                 label_hovered = train[i].name;
-                
+
                 ofFill();
                 ofBeginShape();
                 for( int j = 0; j < train[i].p.getVertices().size(); j++ ){
@@ -443,7 +443,7 @@ void ofxOpenCvDnnObjectDetection::drawAnnotation(float _x, float _y, float _w, f
             ofDrawCircle(p.getVertices()[i].x, p.getVertices()[i].y, snapsize);
         }
         ofEndShape();
-        
+
         // 最後のポイント、最初のポイントと現在のマウスポイント位置を線分で表示する
         if( p.getVertices().size() > 0 ){
             ofNoFill();
@@ -465,7 +465,7 @@ void ofxOpenCvDnnObjectDetection::drawAnnotation(float _x, float _y, float _w, f
                 }
             }
         }
-        
+
         // alt key を押している場合は吸着表示（大きめの丸を描く）
         if( is_alt_key_pressed == true){
             ofNoFill();
@@ -487,13 +487,13 @@ void ofxOpenCvDnnObjectDetection::drawAnnotation(float _x, float _y, float _w, f
                         }
                         p.addVertex(train[i].p.getVertices()[j].x,
                                     train[i].p.getVertices()[j].y);
-                        
+
                     }
                 }
             }
-            
+
         }
-                   
+
     }
 }
 
@@ -510,7 +510,7 @@ void ofxOpenCvDnnObjectDetection::postprocess(Mat& frame, const std::vector<Mat>
 
     static std::vector<int> outLayers = net.getUnconnectedOutLayers();
     static std::string outLayerType = net.getLayer(outLayers[0])->type;
-    
+
     std::vector<int> classIds;
     std::vector<float> confidences;
     std::vector<cv::Rect> boxes;
@@ -567,9 +567,9 @@ void ofxOpenCvDnnObjectDetection::postprocess(Mat& frame, const std::vector<Mat>
 //                object.push_back(::Object(data[i+1]-1, label, confidence, r.x,r.y, r.width, r.height));
 //            }
 //        }
-        
-        
-        
+
+
+
         CV_Assert(outs.size() > 0);
 
         for (size_t k = 0; k < outs.size(); k++){
@@ -583,7 +583,7 @@ void ofxOpenCvDnnObjectDetection::postprocess(Mat& frame, const std::vector<Mat>
                     float bottom = (data[i + 6] * frame.rows)/input_height;
                     float width = right - left ;
                     float height = bottom - top ;
-                    
+
                     String label = String(classNamesVec[data[i+1]-1]);
                     ofRectangle r(left,top,width,height);
                     object.push_back(::Object(data[i+1]-1, label, confidence, r.x,r.y, r.width, r.height));
@@ -593,7 +593,7 @@ void ofxOpenCvDnnObjectDetection::postprocess(Mat& frame, const std::vector<Mat>
     }
     else if (outLayerType == "Region") // Yolo
     {
-    
+
         for (size_t i = 0; i < outs.size(); ++i)
         {
             // Network produces output blob with a shape NxC where N is a number of
@@ -662,12 +662,12 @@ void ofxOpenCvDnnObjectDetection::drawAnnotationControls()
         ofBackground(60);
     }
     ofSetColor(255);
-    
+
     // Show YOLO Class Selector
     drawClassSelector(image_annotation.getWidth()+20,20, 3);
-    
-    
-    
+
+
+
     // Show YOLO Realtime detection result
     if( flg_show_yolo_detection == true ){
         ofSetColor(255);
@@ -681,22 +681,22 @@ void ofxOpenCvDnnObjectDetection::drawAnnotationControls()
         drawAnnotation(0,0,
                        image_annotation.getWidth(),
                        image_annotation.getHeight());
-        
+
     }
-    
+
     // Show bounding box selecting operation
     if( toggle_check_segmentation == false){
         ofNoFill();
         ofSetLineWidth(2.0);
         ofDrawRectangle(r);
-        
+
         drawReconfirmAnnotation();
         ofSetColor(ofColor::ghostWhite);
         font_debug.drawString(str_debug,
                               20+image_annotation.getWidth(),
                               60+gui_basic.getHeight()+r_class_selector.getHeight());
     }
-    
+
     switch( mode_annotation )
     {
         case MODE_DIR_IMAGE_ANNOTATION:
@@ -728,15 +728,15 @@ void ofxOpenCvDnnObjectDetection::drawAnnotationControls()
             font_message.drawString(filename_jpg,
                                     0,
                                     image_annotation.getHeight()+14);
-            
+
             break;
     }
-    
-    
-    
+
+
+
     gui_basic.draw();
     gui_appearance.draw();
-    
+
     // show cross
     ofSetLineWidth(1.0);
     if( darkmode ){
@@ -747,7 +747,7 @@ void ofxOpenCvDnnObjectDetection::drawAnnotationControls()
     }
     ofDrawLine(ofGetMouseX(), 0, ofGetMouseX(), ofGetHeight());
     ofDrawLine(0, ofGetMouseY(), ofGetWidth(), ofGetMouseY());
-    
+
     // Magnify a mouse hoverd annotation
     if( b_magnify == true ){
         if( toggle_check_segmentation == false ){
@@ -849,8 +849,8 @@ void ofxOpenCvDnnObjectDetection::drawAnnotationControls()
     else{
         ofShowCursor();
     }
-    
-    
+
+
     if( mode_annotation == MODE_SELECT_ANNOTATION ){
         static unsigned long timestamp = 0;
         ofFill();
@@ -860,7 +860,7 @@ void ofxOpenCvDnnObjectDetection::drawAnnotationControls()
         ofSetColor(255);
         String str = "Drag and drop your file to start ";
         if( ofGetSeconds() %2 == 0)str += ">";
-        
+
         gui_annotation_selector.draw();
         str+="\n\n";
         str += "[README]\n\nSingle image annotation: Drag and Drop an image.\n - .jpg is only allowd.\nImage directory annotation: Drag and Drop a directory.\n - needs to include .jpg and .txt(yolo) file.\nCamera annotation: press 'C' key.\nVideo file annotation: Drag and Drop a video file.\n - .mov and .mp4 are allowd.\n\nIf you wanna replace dnn network files, press 'o' to open a data directory. \nThen replace yolo.weights and yolo.cfg files to other files and Restart this app.\n\nAuthor:Tetsuaki Baba, https://tetsuakibaba.jp, 2021\nLisence:MIT License";
@@ -871,7 +871,7 @@ void ofxOpenCvDnnObjectDetection::drawAnnotationControls()
 void ofxOpenCvDnnObjectDetection::updateControls()
 {
     fps = ofGetFrameRate();
-  
+
     setNetworkImageSize(network_image_size, network_image_size);
     gui_basic.setPosition(getClassSelectorBoundingBox().getX(),
                           getClassSelectorBoundingBox().getHeight()+
@@ -887,12 +887,12 @@ void ofxOpenCvDnnObjectDetection::updateControls()
     gui_appearance.setWidthElements(r_class_selector.getWidth()/2-5);
     gui_appearance.setDefaultWidth(r_class_selector.getWidth()/2-5);
 
-    
+
     switch( mode_annotation )
     {
         case MODE_CAMERA_ANNOTATION:
             if( train.size() >  0 )flg_pause_camera = true;
-            
+
             if( flg_pause_camera == false ){
                 camera.update();
                 if( camera.isFrameNew() ){
@@ -901,24 +901,24 @@ void ofxOpenCvDnnObjectDetection::updateControls()
                 }
             }
             break;
-            
+
         case MODE_VIDEO_ANNOTATION:
-            
+
             video.update();
             if( video.isFrameNew() ){
                 image_annotation.setFromPixels(video.getPixels());
                 if( flg_show_yolo_detection){
                     update(video.getPixels());
                 }
-                
+
                 seekbar.removeListener(this, &ofxOpenCvDnnObjectDetection::changeSeekbar);
                 seekbar = video.getCurrentFrame();
                 seekbar.addListener(this, &ofxOpenCvDnnObjectDetection::changeSeekbar);
-                
+
             }
             break;
     }
-    
+
     // dnn detection checker, it runs one by one step for image check.
     if( b_ai_checker && mode_annotation == MODE_DIR_IMAGE_ANNOTATION){
         if( !checkAnnotationImage(threshold_precision) ){
@@ -951,7 +951,7 @@ void ofxOpenCvDnnObjectDetection::update(ofPixels &pix)
 //    resized = frame = toCV(op);
     input_width = (int)pix.getWidth();
     input_height = (int)pix.getHeight();
-	
+
 	// Acabo de eu mesmo colocar. sera q precisa?
 //	cvtColor(resized, resized, COLOR_RGB2BGR);
 
@@ -959,31 +959,31 @@ void ofxOpenCvDnnObjectDetection::update(ofPixels &pix)
 		cout << "4 channels" << endl;
         cvtColor(frame, frame, COLOR_BGRA2RGB);
     }
-    
+
     //! [Resizing without keeping aspect ratio]
 
 	if (resized.size().width > 500) {
 		resize(frame, resized, cv::Size(network_width, network_height));
 	}
-    
-	
+
+
 //	cout << "resized ::: " << resized.size().width << endl;
     //! [Prepare blob]
     inputBlob = blobFromImage(resized, 1 / 255.F); //Convert Mat to batch of images
-    
+
     //! [Set input blob]
     //net.setInput(inputBlob, "data");                   //set the network input
     net.setInput(inputBlob);
-    
+
 //	outs.clear();
-	
+
     uint64_t t0 = ofGetElapsedTimeMicros();
-	
+
 //	net.forward(outs);
     net.forward(outs, getOutputsNames(net));
 //	cout << outs.size() << endl;
     inference_time = ofGetElapsedTimeMicros()-t0;
-    
+
     postprocess(frame, outs, net);
 }
 
@@ -998,7 +998,7 @@ void ofxOpenCvDnnObjectDetection::setupAnnotationGui()
     gui_annotation_selector.setName("Annotation Type");
     gui_annotation_selector.add(toggle_check_segmentation.setup("Segmentation", true));
     toggle_check_segmentation.addListener(this, &ofxOpenCvDnnObjectDetection::annotationSelect);
-    
+
     gui_frame.setup();
     gui_frame.setName("Seek Bar");
     gui_frame.add(seekbar.set("frame", 0));
@@ -1013,7 +1013,7 @@ void ofxOpenCvDnnObjectDetection::setupAnnotationGui()
     gui_basic.setName("Settings");
     gui_basic.loadFont(ofToDataPath("font/DIN Alternate Bold.ttf"), 10);
     gui_basic.setPosition(20,20);
-    
+
     gui_basic.setSize(r_class_selector.getWidth(),18);
     gui_basic.setWidthElements(r_class_selector.getWidth()/2);
     gui_basic.setDefaultWidth(r_class_selector.getWidth()/2);
@@ -1034,7 +1034,7 @@ void ofxOpenCvDnnObjectDetection::setupAnnotationGui()
     gui_basic.add(label_hovered.set("Hovered Class Label","--"));
     gui_basic.add(button_save_gui_settings.setup("Save Gui Settings [S]", false));
     gui_basic.add(button_load_gui_settings.setup("Load Gui Settings [L]", false));
-    
+
     gui_appearance.setup();
     gui_appearance.setName("Appearance");
     gui_appearance.loadFont(ofToDataPath("font/DIN Alternate Bold.ttf"), 10);
@@ -1043,11 +1043,11 @@ void ofxOpenCvDnnObjectDetection::setupAnnotationGui()
 
     gui_appearance.add(color_working_polyline.setup("Color of Working Polyline", ofColor(255,0,0), ofColor(0,0), ofColor(255,255)));
     gui_appearance.add(color_working_vertex.setup("Color of Working Vertex", ofColor::darkSalmon,ofColor(0,0), ofColor(255,255)));
-    
+
     gui_appearance.add(color_train_polyline.setup("Color of Saved Polyline", ofColor::orange, ofColor(0,0), ofColor(255,255)));
     gui_appearance.add(color_train_vertex.setup("Color of Saved Vertex", ofColor::seaGreen,ofColor(0,0), ofColor(255,255)));
     gui_appearance.add(alpha_annotation.set("Alpha Value of Region", 50, 1,255));
-    
+
 //    color_working_polyline.
 
     enableAnnotationControl();
@@ -1056,25 +1056,25 @@ void ofxOpenCvDnnObjectDetection::setup(string _path_to_cfg, string _path_to_wei
 {
     mode_annotation = MODE_SELECT_ANNOTATION;
     flg_pause_camera = true;
-    
+
     filepath = ofToDataPath("");
     filename = "test";
     filename_jpg = "test.jpg";
     filename_txt = "test.txt";
-    
+
     font_message.load(ofToDataPath("font/DIN Alternate Bold.ttf"), 12);
     font_info.load(ofToDataPath("font/DIN Alternate Bold.ttf"), 12);
     font_debug.load(ofToDataPath("font/DIN Alternate Bold.ttf"), 8);
-    
-    
+
+
 //    putenv("OPENCV_OPENCL_RUNTIME=");
 //    putenv("OPENCV_OPENCL_DEVICE=:DGPU:0");
     str_debug+="[DEBUG]\n";
 //    ocl::setUseOpenCL( true );
-    
+
     String modelConfiguration = _path_to_cfg;
     String modelBinary = _path_to_weights;
-    
+
     //! [Initialize
 
     net = readNet(modelConfiguration, modelBinary);
@@ -1084,7 +1084,7 @@ void ofxOpenCvDnnObjectDetection::setup(string _path_to_cfg, string _path_to_wei
     str_debug+="classlist file: "+_path_to_names+"\n";
     str_debug+="cfg file: "+_path_to_cfg+"\n";
     str_debug+="weight file: "+_path_to_weights+"\n";
-    
+
     std::vector<String> lname = net.getLayerNames();
     for (int i = 0; i < lname.size();i++) {
         std::cout << i+1 << " " << lname[i] << std::endl;
@@ -1105,7 +1105,7 @@ void ofxOpenCvDnnObjectDetection::setup(string _path_to_cfg, string _path_to_wei
 
 //    net.setPreferableTarget(DNN_TARGET_OPENCL_FP16);
 
-    
+
 
 
     if (net.empty())
@@ -1114,7 +1114,7 @@ void ofxOpenCvDnnObjectDetection::setup(string _path_to_cfg, string _path_to_wei
         cout << "cfg-file:     " << modelConfiguration << endl;
         cout << "weights-file: " << modelBinary << endl;
     }
-    
+
     // objectClassName
     cout << _path_to_names << endl;
     ifstream classNamesFile(_path_to_names);
@@ -1124,26 +1124,26 @@ void ofxOpenCvDnnObjectDetection::setup(string _path_to_cfg, string _path_to_wei
         while (std::getline(classNamesFile, className)){
             classNamesVec.push_back(className);
         }
-        
+
         for( auto itr : classNamesVec )
         {
             string cName = itr;
             //cout << "classNames :" << cName << endl;
         }
     }
-    
+
     // set default Detection Color
     setAnnotationColorMode(ANNOTATION_COLOR_MODE_DEFAULT);
-    
+
     confidenceThreshold = 0.4;
     class_id_selected = 0; // default
-    
-    
+
+
 }
 
 void ofxOpenCvDnnObjectDetection::setAnnotationColorMode(int _mode)
 {
-    
+
     detection_color.clear();
     if( _mode == ANNOTATION_COLOR_MODE_DEFAULT ){
         for( int i = 0; i < classNamesVec.size(); i++ ){
@@ -1190,7 +1190,7 @@ void ofxOpenCvDnnObjectDetection::loadSegmentationFile(string _path_to_file)
 {
     train.clear();
     vector<string>str_pl;
-    
+
     if( !ofFile::doesFileExist(_path_to_file) ){
         cout << "no such a file" << endl;
 //        ofSystem("touch "+_path_to_file);
@@ -1201,13 +1201,13 @@ void ofxOpenCvDnnObjectDetection::loadSegmentationFile(string _path_to_file)
     for( auto line: ofbuf.getLines() ){
         str_pl.push_back(line);
     }
-    
+
     for( int j = 0; j < str_pl.size(); j++ ){
         auto string = str_pl[j];
         auto separator = std::string(" ");
         auto separator_length = separator.length();
         auto list = std::vector<std::string>();
-        
+
         if (separator_length == 0) {
             list.push_back(string);
         }
@@ -1223,8 +1223,8 @@ void ofxOpenCvDnnObjectDetection::loadSegmentationFile(string _path_to_file)
                 offset = pos + separator_length;
             }
         }
-        
-        
+
+
         if( list.size() >= 3 ){
             ofPolyline pl;
             for( int i = 1; i < list.size(); i+=2 ){
@@ -1241,7 +1241,7 @@ void ofxOpenCvDnnObjectDetection::loadBoundingBoxFile(string _path_to_file)
 {
     train.clear();
     vector<string>str_bb;
-    
+
     if( !ofFile::doesFileExist(_path_to_file) ){
         cout << "no such a file" << endl;
         ofSystem("touch "+_path_to_file);
@@ -1252,13 +1252,13 @@ void ofxOpenCvDnnObjectDetection::loadBoundingBoxFile(string _path_to_file)
     for( auto line: ofbuf.getLines() ){
         str_bb.push_back(line);
     }
-    
+
     for( int j = 0; j < str_bb.size(); j++ ){
         auto string = str_bb[j];
         auto separator = std::string(" ");
         auto separator_length = separator.length();
         auto list = std::vector<std::string>();
-        
+
         if (separator_length == 0) {
             list.push_back(string);
         }
@@ -1274,8 +1274,8 @@ void ofxOpenCvDnnObjectDetection::loadBoundingBoxFile(string _path_to_file)
                 offset = pos + separator_length;
             }
         }
-        
-        
+
+
         if( list.size() == 5 ){
             float x,y,w,h;
             x = ofToFloat(list[1]);
@@ -1391,7 +1391,7 @@ void ofxOpenCvDnnObjectDetection::deleteAnnotation(int _position)
     else{
         cout << "Failed: _path_to_file: " + filename_txt << endl;
     }
-    
+
 }
 
 void ofxOpenCvDnnObjectDetection::saveSegmentationToFile(string _path_to_file)
@@ -1452,8 +1452,8 @@ void ofxOpenCvDnnObjectDetection::setPreviousAnnotation()
 void ofxOpenCvDnnObjectDetection::adjustGuiComponents()
 {
     float w, h;
-   
-    
+
+
     if( image_annotation.getHeight()+20*2 < r_class_selector.getHeight()+gui_basic.getHeight()+20*3 ){
         h = r_class_selector.getHeight()+gui_basic.getHeight()+20*3;
     }
@@ -1471,27 +1471,27 @@ void ofxOpenCvDnnObjectDetection::setPositionAnnotation(int _pos, string _text_s
     else{
         vector<string>search_id = split(_text_search_id, ',');
     }
-    
+
     pos_annotation_file = _pos;
     if( pos_annotation_file < 0 ){
         pos_annotation_file=0;
     }
     if( pos_annotation_file >= dir_annotation.size())pos_annotation_file = dir_annotation.size()-1;
-    
-    
+
+
     filename_jpg = dir_annotation.getPath(pos_annotation_file);
     filename_txt = Replace(dir_annotation.getPath(pos_annotation_file),".jpg", ".txt");
     loadAnnotationImage(filename_jpg);
     loadAnnotationFile(filename_txt);
     adjustGuiComponents();
-    
+
 }
 void ofxOpenCvDnnObjectDetection::drawClassSelector(float _x, float _y, int _row)
 {
     // Show Class Selector
     int row = _row;
     float x,y;
-    
+
     float w_max = 0;
     for( int i = 0; i < classNamesVec.size(); i++ ){
         float w_tmp = font_info.getStringBoundingBox(" ["+ofToString(i)+"]"+classNamesVec.at(i)+" ", 0, 0).getWidth();
@@ -1521,20 +1521,20 @@ void ofxOpenCvDnnObjectDetection::drawClassSelector(float _x, float _y, int _row
                 ofDrawRectangle(r_name);
             }
         }
-        
+
         if( class_id_selected == i ){
             ofFill();
             ofDrawRectangle(r_name);
-            
+
             ofSetColor(detection_color.at(i).getInverted());
             font_info.drawString(" ["+ofToString(i)+"]"+classNamesVec.at(i),x,y);
-                                 
+
         }
         else{
             font_info.drawString(" ["+ofToString(i)+"]"+classNamesVec.at(i),x,y);
         }
     }
-    
+
 }
 
 void ofxOpenCvDnnObjectDetection::addTrainObject(int _class_id_selected, ofRectangle _r)
@@ -1589,7 +1589,7 @@ bool ofxOpenCvDnnObjectDetection::checkAnnotationImage(float _threshold_area)
         }
     }
 
-    
+
     r_reconfirm.set(0,0,0,0);
     return true;
 }
@@ -1597,7 +1597,7 @@ bool ofxOpenCvDnnObjectDetection::checkAnnotationImage(float _threshold_area)
 void ofxOpenCvDnnObjectDetection::drawReconfirmAnnotation()
 {
     // Show Bounding Box to be reconfirmed.
-    
+
     ofSetColor(ofColor::darkRed, r_reconfirm_alpha);
     ofFill();
     float scale_x, scale_y;
@@ -1609,13 +1609,13 @@ void ofxOpenCvDnnObjectDetection::drawReconfirmAnnotation()
                     r_reconfirm.getHeight()*scale_y);
 
     if( r_reconfirm_alpha > 0 )r_reconfirm_alpha=r_reconfirm_alpha-2;
-    
-    
+
+
 }
 
 void ofxOpenCvDnnObjectDetection::annotationSelect(bool &_mode)
 {
-    
+
 }
 
 
@@ -1701,7 +1701,7 @@ void ofxOpenCvDnnObjectDetection::mouseDragged(ofMouseEventArgs &e)
     float x = e.x;
     float y = e.y;
     if( toggle_check_segmentation == false ){
-        
+
         is_dragging = true;
         ofRectangle r_img;
         float w,h;
@@ -1733,8 +1733,8 @@ void ofxOpenCvDnnObjectDetection::mousePressed(ofMouseEventArgs &e)
     float x = e.x;
     float y = e.y;
     r.set(x,y,0,0);
-    
-    
+
+
     if( flg_show_yolo_detection == false ){
         //
         for( int i = 0; i < train.size(); i++ ){
@@ -1765,10 +1765,10 @@ void ofxOpenCvDnnObjectDetection::mousePressed(ofMouseEventArgs &e)
                     saveAnnotation();
                 }
             }
-            
+
         }
     }
-    
+
     if( toggle_check_segmentation == true ){
         is_dragging_points = false;
         dragging_points.clear();
@@ -1786,9 +1786,9 @@ void ofxOpenCvDnnObjectDetection::mousePressed(ofMouseEventArgs &e)
         }
 
     }
-    
-    
-    
+
+
+
 }
 
 //--------------------------------------------------------------
@@ -1797,27 +1797,27 @@ void ofxOpenCvDnnObjectDetection::mouseReleased(ofMouseEventArgs &e)
     float x = e.x;
     float y = e.y;
     is_dragging = false;
-    
+
     r.width = x-r.x;
     r.height = y-r.y;
     r.standardize();
-    
+
     if( mode_annotation == MODE_CAMERA_ANNOTATION ){
         if( train.size() == 0 && r.getArea() > 10){
             setAnnotationFilename(path+ofGetTimestampString());
         }
     }
-    
+
     if( mode_annotation == MODE_VIDEO_ANNOTATION ){
         if( train.size() == 0 &&  r.getArea() > 10){
             setAnnotationFilename(path+ofGetTimestampString());
         }
     }
-    
+
     if( mode_annotation == MODE_AUDIO_ANNOTATION){
-        
+
     }
-    
+
     ofRectangle r_img;
     r_img.set(0,0, image_annotation.getWidth(), image_annotation.getHeight());
     if( toggle_check_segmentation == false){
@@ -1826,14 +1826,14 @@ void ofxOpenCvDnnObjectDetection::mouseReleased(ofMouseEventArgs &e)
             r.y = r.y/image_annotation.getHeight();
             r.width = r.width/image_annotation.getWidth();
             r.height = r.height/image_annotation.getHeight();
-            
+
             addTrainObject(class_id_selected, r);
             saveAnnotation();
         }
         r.set(0,0,0,0);
     }
     else{
-        
+
         // ドラッグ操作の終わりにおけるマウスreleaseの場合
         if( is_dragging_points == true ){
             is_dragging_points = false;
@@ -1844,7 +1844,7 @@ void ofxOpenCvDnnObjectDetection::mouseReleased(ofMouseEventArgs &e)
         for( int i = 0; i < train.size(); i++ ){
             if(train[i].p.inside(ofGetMouseX(), ofGetMouseY()) &&
                p.getVertices().size() == 0 ){
-                
+
                 // 該当するどの頂点座標上にもマウスポインタがないかを確認
                 bool is_not_on_any_point = true;
                 for( int j = 0; j < train[i].p.getVertices().size();j++){
@@ -1854,7 +1854,7 @@ void ofxOpenCvDnnObjectDetection::mouseReleased(ofMouseEventArgs &e)
                         is_not_on_any_point = false;
                     }
                 }
-                
+
                 if( is_not_on_any_point == true ){
                     // 削除するデータを一時保存しておく
                     train_cache.push_back(train.at(i));
@@ -1863,25 +1863,25 @@ void ofxOpenCvDnnObjectDetection::mouseReleased(ofMouseEventArgs &e)
                     if( train.size() == 0 ){
                         removeAnnotationFiles();
                     }
-                    
+
                     return;
                 }
             }
 
         }
-            
+
 
         // 画像内でのマウスReleasedだったら新しい頂点を追加する、または最新頂点の座標上であれば Enterキーを押したとき同様の振る舞い（データ追加）を行う
         ofRectangle r_img;
         r_img.set(0,0, image_annotation.getWidth(), image_annotation.getHeight());
         if( r_img.inside(x,y)){
-            
+
             glm::vec2 p_last;
             // 3頂点は面を作成するためには必須
             if( p.getVertices().size() >= 3 ){
                 p_last = p.getVertices()[0];
             }
-            
+
             // pの最初の座標をクリックして面を作成するとき
             if( p.getVertices().size() >= 3 && ofDist(x,y,p_last.x, p_last.y) <= snapsize ){
                 addTrainObject(class_id_selected, p);
@@ -1905,10 +1905,10 @@ void ofxOpenCvDnnObjectDetection::mouseReleased(ofMouseEventArgs &e)
                 }
                 p.addVertex(x_add,y_add);
             }
-            
+
         }
     }
-    
+
 }
 
 //--------------------------------------------------------------
@@ -1925,14 +1925,9 @@ void ofxOpenCvDnnObjectDetection::mouseExit(ofMouseEventArgs &e)
 void ofxOpenCvDnnObjectDetection::dragEvent(ofDragInfo &dragInfo){
     ofDirectory dir;
     dir.open(dragInfo.files[0]);
-<<<<<<< HEAD
-    str_debug = "Drag Event:\n " + dragInfo.files[0].string();
-=======
     str_debug = "Drag Event:\n " + ofPathToString(dragInfo.files[0]);
->>>>>>> origin/update
-   
-    
-    
+
+
     if( dir.isDirectory() ){
         if( video.isLoaded() )  video.closeMovie();
         loadAnnotationDir(dragInfo.files[0]);
@@ -1953,7 +1948,7 @@ void ofxOpenCvDnnObjectDetection::dragEvent(ofDragInfo &dragInfo){
         if( !file.bSuccess )return;
         path = file.getPath();
         setAnnotationFilename(file.getPath()+ofGetTimestampString());
-        
+
         if( video.isLoaded() )video.close();
         video.load(dragInfo.files[0]);
         mode_annotation = MODE_VIDEO_ANNOTATION;
@@ -1983,7 +1978,7 @@ void ofxOpenCvDnnObjectDetection::dragEvent(ofDragInfo &dragInfo){
         loadAnnotationImage(filename_jpg);
         loadAnnotationFile(filename_txt);
         adjustGuiComponents();
-        
+
     }
     else if( doesIncludeExtensions(dragInfo.files[0], {".wav", "WAV"})){
         if( video.isLoaded() ){
@@ -1999,6 +1994,6 @@ void ofxOpenCvDnnObjectDetection::dragEvent(ofDragInfo &dragInfo){
         ofSystemAlertDialog("Error: Filetype is not allowed.");
     }
     dir.close();
-    
+
     flg_show_yolo_detection = false;
 }
