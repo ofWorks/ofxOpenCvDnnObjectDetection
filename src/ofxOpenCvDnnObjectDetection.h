@@ -56,7 +56,7 @@ public:
 };
 
 struct DraggingPoint{
-    ofPoint p;
+    glm::vec2 p;
     int id;
     int id_point;
 };

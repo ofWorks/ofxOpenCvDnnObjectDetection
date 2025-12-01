@@ -182,7 +182,7 @@ void ofxOpenCvDnnObjectDetection::keyPressed(ofKeyEventArgs &e)
         }
         string camera_id = ofSystemTextBoxDialog("Choose Camera ID to Open\n"+devices, ofToString(camera.listDevices().size()-1));
         camera.setDeviceID(ofToInt(camera_id));
-        camera.initGrabber(640,480);
+        camera.setup(640,480);
         image_annotation.setFromPixels(camera.getPixels());
         adjustGuiComponents();
         flg_pause_camera = false;
@@ -1689,7 +1689,7 @@ void ofxOpenCvDnnObjectDetection::mouseDragged(ofMouseEventArgs &e)
             cout << "hello" << endl;
             for( int i = 0; i < dragging_points.size(); i++){
                 DraggingPoint dp = dragging_points[i];
-                train[dp.id].p.getVertices()[dp.id_point] =  ofPoint(x,y);
+				train[dp.id].p.getVertices()[dp.id_point] = glm::vec3{ x, y, 0 };
             }
         }
     }
@@ -1742,7 +1742,7 @@ void ofxOpenCvDnnObjectDetection::mousePressed(ofMouseEventArgs &e)
         dragging_points.clear();
         for( int i = 0; i < train.size(); i++ ){
             for( int j = 0; j < train[i].p.getVertices().size(); j++){
-                ofPoint pos = train[i].p.getVertices()[j];
+                glm::vec2 pos = train[i].p.getVertices()[j];
                 if( ofDist(x,y, pos.x, pos.y) <= snapsize){
                     DraggingPoint dp;
                     dp.p = pos;
@@ -1844,7 +1844,7 @@ void ofxOpenCvDnnObjectDetection::mouseReleased(ofMouseEventArgs &e)
         r_img.set(0,0, image_annotation.getWidth(), image_annotation.getHeight());
         if( r_img.inside(x,y)){
             
-            ofPoint p_last;
+            glm::vec2 p_last;
             // 3頂点は面を作成するためには必須
             if( p.getVertices().size() >= 3 ){
                 p_last = p.getVertices()[0];
@@ -1864,7 +1864,7 @@ void ofxOpenCvDnnObjectDetection::mouseReleased(ofMouseEventArgs &e)
                 for( int i = 0; i < train.size(); i++ ){
                     ofPolyline pl = train[i].p;
                     for( int j = 0; j < pl.getVertices().size(); j++ ){
-                        ofPoint pos = pl.getVertices()[j];
+                        glm::vec2 pos = pl.getVertices()[j];
                         if( ofDist(pos.x, pos.y, x, y) <= snapsize ){
                             x_add = pos.x;
                             y_add = pos.y;
@@ -1893,7 +1893,7 @@ void ofxOpenCvDnnObjectDetection::mouseExit(ofMouseEventArgs &e)
 void ofxOpenCvDnnObjectDetection::dragEvent(ofDragInfo &dragInfo){
     ofDirectory dir;
     dir.open(dragInfo.files[0]);
-    str_debug = "Drag Event:\n "+dragInfo.files[0];
+    str_debug = "Drag Event:\n " + dragInfo.files[0].string();
    
     
     
